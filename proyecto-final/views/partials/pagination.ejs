@@ -1,0 +1,7 @@
+<% if (pages > 1) { %>
+  <nav class="pagination">
+    <% if (page > 1) { %><a class="btn btn-secondary" href="<%= base + (page - 1) %>">« Anterior</a><% } %>
+    <span>Página <%= page %> de <%= pages %> (<%= total %> resultados)</span>
+    <% if (page < pages) { %><a class="btn btn-secondary" href="<%= base + (page + 1) %>">Siguiente »</a><% } %>
+  </nav>
+<% } %>

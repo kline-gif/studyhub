@@ -1,0 +1,26 @@
+<div class="toolbar">
+  <h1><%= currentUser.role === 'admin' ? 'Todas las asignaturas' : 'Mis asignaturas' %></h1>
+  <a class="btn" href="/subjects/new">+ Nueva asignatura</a>
+</div>
+
+<form method="GET" action="/subjects" class="filters">
+  <input type="search" name="q" placeholder="Buscar asignatura…" value="<%= q %>">
+  <button class="btn btn-secondary" type="submit">Buscar</button>
+</form>
+
+<% if (items.length === 0) { %>
+  <p class="empty">No hay asignaturas todavía.</p>
+<% } else { %>
+  <div class="grid">
+    <% items.forEach(function (s) { const sm = s.summary(); %>
+      <article class="card">
+        <span class="badge"><%= s.credits %> ECTS</span>
+        <% if (s.semester) { %><span class="badge"><%= s.semester %></span><% } %>
+        <h2><a href="/subjects/<%= s._id %>"><%= s.name %></a></h2>
+        <small><%= s.code %> <% if (currentUser.role === 'admin' && s.owner) { %>· de <%= s.owner.name %><% } %></small>
+        <p>Media: <strong><%= sm.average === null ? '—' : sm.average %></strong> · <span class="badge st-<%= slug(sm.state) %>"><%= sm.state %></span></p>
+      </article>
+    <% }) %>
+  </div>
+  <%- include('../partials/pagination', { base: '/subjects?q=' + encodeURIComponent(q) + '&limit=' + limit + '&page=', page, pages, total }) %>
+<% } %>

@@ -1,0 +1,82 @@
+<div class="toolbar">
+  <div>
+    <h1><%= subject.name %></h1>
+    <small><%= subject.code %> · <%= subject.credits %> ECTS <% if (subject.semester) { %>· <%= subject.semester %><% } %>
+      <% if (currentUser.role === 'admin' && subject.owner) { %>· propietario: <%= subject.owner.name %><% } %></small>
+  </div>
+  <div class="actions">
+    <a class="btn btn-secondary" href="/subjects">← Volver</a>
+    <% if (canEdit) { %><a class="btn" href="/subjects/<%= subject._id %>/edit">Editar</a><% } %>
+    <% if (canDelete) { %>
+      <form action="/subjects/<%= subject._id %>?_method=DELETE" method="POST" class="inline"
+            data-confirm="¿Eliminar la asignatura y TODAS sus tareas?">
+        <button class="btn btn-danger" type="submit">Eliminar</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<section class="stats">
+  <div class="card stat"><span class="num"><%= summary.average === null ? '—' : summary.average %></span><span>Media de lo evaluado</span></div>
+  <div class="card stat"><span class="num"><%= summary.points %></span><span>Puntos aportados (de 10)</span></div>
+  <div class="card stat"><span class="num"><%= summary.remaining %>%</span><span>Peso sin nota</span></div>
+  <div class="card stat"><span class="num"><%= summary.needed === null ? '—' : summary.needed %></span><span>Nota necesaria en lo restante para aprobar (5)</span></div>
+</section>
+
+<p><span class="badge st-<%= slug(summary.state) %>">Estado: <%= summary.state %></span>
+  <% if (summary.state === 'Imposible aprobar') { %><small> Necesitarías más de un 10 en lo que queda.</small><% } %>
+  <% if (summary.totalWeight < 100) { %><small> · Has definido el <%= summary.totalWeight %>% de la evaluación; añade el resto para un cálculo exacto.</small><% } %>
+</p>
+
+<section class="card">
+  <h2>Evaluaciones</h2>
+  <% if (subject.evaluations.length === 0) { %>
+    <p class="empty">Añade parciales, prácticas, examen final… con su peso.</p>
+  <% } else { %>
+    <table>
+      <thead><tr><th>Evaluación</th><th>Peso</th><th>Nota</th><th></th></tr></thead>
+      <tbody>
+        <% subject.evaluations.forEach(function (e) { %>
+          <tr>
+            <td><%= e.name %></td>
+            <td><%= e.weight %>%</td>
+            <td><%= e.grade === null || e.grade === undefined ? 'Pendiente' : e.grade %></td>
+            <td>
+              <% if (canEdit) { %>
+                <form action="/subjects/<%= subject._id %>/evaluations/<%= e._id %>?_method=DELETE" method="POST" class="inline" data-confirm="¿Eliminar esta evaluación?">
+                  <button class="btn btn-small btn-danger" type="submit">✕</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <% if (canEdit) { %>
+    <form method="POST" action="/subjects/<%= subject._id %>/evaluations" class="row eval-form">
+      <label>Nombre<input type="text" name="name" required maxlength="60" placeholder="Parcial 1"></label>
+      <label>Peso (%)<input type="number" name="weight" min="1" max="100" step="0.5" required></label>
+      <label>Nota (0-10, opcional)<input type="number" name="grade" min="0" max="10" step="0.01"></label>
+      <button class="btn" type="submit">Añadir</button>
+    </form>
+  <% } %>
+</section>
+
+<section class="card">
+  <div class="toolbar"><h2>Tareas de esta asignatura</h2><% if (canEdit) { %><a class="btn btn-secondary" href="/tasks/new">+ Tarea</a><% } %></div>
+  <% if (tasks.length === 0) { %>
+    <p class="empty">Sin tareas.</p>
+  <% } else { %>
+    <ul class="list">
+      <% tasks.forEach(function (t) { %>
+        <li>
+          <a href="/tasks/<%= t._id %>"><%= t.title %></a>
+          <small><%= t.type %> · <%= fmtDate(t.dueDate) %></small>
+          <span class="badge s-<%= slug(t.status) %>"><%= t.status %></span>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>

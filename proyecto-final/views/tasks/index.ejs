@@ -1,0 +1,49 @@
+<div class="toolbar">
+  <h1><%= currentUser.role === 'admin' ? 'Todas las tareas' : 'Mis tareas' %></h1>
+  <a class="btn" href="/tasks/new">+ Nueva tarea</a>
+</div>
+
+<form method="GET" action="/tasks" class="filters">
+  <input type="search" name="q" placeholder="Buscar por título…" value="<%= q %>">
+  <select name="status">
+    <option value="">Todos los estados</option>
+    <% statuses.forEach(function (s) { %><option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s %></option><% }) %>
+  </select>
+  <select name="subject">
+    <option value="">Todas las asignaturas</option>
+    <% subjects.forEach(function (s) { %><option value="<%= s._id %>" <%= subject === String(s._id) ? 'selected' : '' %>><%= s.name %></option><% }) %>
+  </select>
+  <button class="btn btn-secondary" type="submit">Filtrar</button>
+</form>
+
+<% if (items.length === 0) { %>
+  <p class="empty">No hay tareas con esos criterios.</p>
+<% } else { %>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Tarea</th><th>Asignatura</th><th>Tipo</th><th>Prioridad</th><th>Entrega</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      <% items.forEach(function (t) { %>
+        <tr class="<%= t.isOverdue ? 'row-overdue' : '' %>">
+          <td><a href="/tasks/<%= t._id %>"><%= t.title %></a>
+            <% if (currentUser.role === 'admin' && t.owner) { %><br><small>de <%= t.owner.name %></small><% } %></td>
+          <td><%= t.subject ? t.subject.name : '—' %></td>
+          <td><%= t.type %></td>
+          <td><span class="badge p-<%= slug(t.priority) %>"><%= t.priority %></span></td>
+          <td><%= fmtDate(t.dueDate) %></td>
+          <td><span class="badge s-<%= slug(t.status) %>"><%= t.status %></span></td>
+          <td>
+            <% if (t.status !== 'Completada' && t.isOwnedBy(currentUser)) { %>
+              <form action="/tasks/<%= t._id %>/status?_method=PATCH" method="POST" class="inline">
+                <input type="hidden" name="status" value="Completada">
+                <button class="btn btn-small" type="submit" title="Marcar completada">✓</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
+  <%- include('../partials/pagination', { base: '/tasks?q=' + encodeURIComponent(q) + '&status=' + encodeURIComponent(status) + '&subject=' + encodeURIComponent(subject) + '&limit=' + limit + '&page=', page, pages, total }) %>
+<% } %>

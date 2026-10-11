@@ -1,0 +1,68 @@
+<h1>Hola, <%= currentUser.name %> 👋</h1>
+
+<section class="stats">
+  <div class="card stat"><span class="num"><%= stats.pending %></span><span>Tareas pendientes</span></div>
+  <div class="card stat <%= stats.overdueCount ? 'stat-danger' : '' %>"><span class="num"><%= stats.overdueCount %></span><span>Atrasadas</span></div>
+  <div class="card stat"><span class="num"><%= stats.completed %></span><span>Completadas</span></div>
+  <div class="card stat"><span class="num"><%= overview.gpa === null ? '—' : overview.gpa %></span><span>Nota media (ponderada por créditos)</span></div>
+</section>
+
+<div class="two-col">
+  <section class="card">
+    <h2>📅 Próximos 7 días</h2>
+    <% if (stats.upcoming.length === 0) { %>
+      <p class="empty">Nada urgente. ¡Buen momento para adelantar!</p>
+    <% } else { %>
+      <ul class="list">
+        <% stats.upcoming.forEach(function (t) { %>
+          <li>
+            <a href="/tasks/<%= t._id %>"><%= t.title %></a>
+            <small><%= t.subject ? t.subject.name : '' %> · <%= t.type %></small>
+            <span class="badge p-<%= slug(t.priority) %>">
+              <%= t.daysLeft === 0 ? 'Hoy' : t.daysLeft === 1 ? 'Mañana' : 'en ' + t.daysLeft + ' días' %>
+            </span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="card">
+    <h2>⚠️ Atrasadas</h2>
+    <% if (stats.overdue.length === 0) { %>
+      <p class="empty">No tienes tareas atrasadas 🎉</p>
+    <% } else { %>
+      <ul class="list">
+        <% stats.overdue.forEach(function (t) { %>
+          <li>
+            <a href="/tasks/<%= t._id %>"><%= t.title %></a>
+            <small><%= t.subject ? t.subject.name : '' %> · venció el <%= fmtDate(t.dueDate) %></small>
+            <span class="badge p-alta">hace <%= Math.abs(t.daysLeft) %> d</span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+</div>
+
+<section class="card">
+  <div class="toolbar"><h2>📚 Mis asignaturas</h2><a class="btn btn-secondary" href="/subjects/new">+ Asignatura</a></div>
+  <% if (overview.rows.length === 0) { %>
+    <p class="empty">Empieza creando tu primera asignatura (ej. "Estructuras de Datos").</p>
+  <% } else { %>
+    <table>
+      <thead><tr><th>Asignatura</th><th>Créditos</th><th>Media actual</th><th>Aportado</th><th>Estado</th></tr></thead>
+      <tbody>
+        <% overview.rows.forEach(function (r) { %>
+          <tr>
+            <td><a href="/subjects/<%= r.subject._id %>"><%= r.subject.name %></a></td>
+            <td><%= r.subject.credits %></td>
+            <td><%= r.summary.average === null ? '—' : r.summary.average %></td>
+            <td><%= r.summary.points %> / 10</td>
+            <td><span class="badge st-<%= slug(r.summary.state) %>"><%= r.summary.state %></span></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</section>

@@ -1,0 +1,37 @@
+<article class="card">
+  <div>
+    <span class="badge s-<%= slug(task.status) %>"><%= task.status %></span>
+    <span class="badge p-<%= slug(task.priority) %>">Prioridad <%= task.priority %></span>
+    <span class="badge"><%= task.type %></span>
+  </div>
+  <h1><%= task.title %></h1>
+  <p>
+    <strong>Asignatura:</strong>
+    <% if (task.subject) { %><a href="/subjects/<%= task.subject._id %>"><%= task.subject.name %></a><% } else { %>—<% } %>
+    <br>
+    <strong>Entrega:</strong> <%= fmtDate(task.dueDate) %>
+    <% if (task.status !== 'Completada') { %>
+      <small>(<%= task.isOverdue ? 'atrasada ' + Math.abs(task.daysLeft) + ' días' : task.daysLeft === 0 ? 'hoy' : 'faltan ' + task.daysLeft + ' días' %>)</small>
+    <% } %>
+    <% if (currentUser.role === 'admin' && task.owner) { %><br><small>Propietario: <%= task.owner.name %></small><% } %>
+  </p>
+  <% if (task.description) { %><div class="post-body"><%= task.description %></div><% } %>
+
+  <div class="actions">
+    <a class="btn btn-secondary" href="/tasks">← Volver</a>
+    <% if (canEdit) { %>
+      <a class="btn" href="/tasks/<%= task._id %>/edit">Editar</a>
+      <% ['Pendiente', 'En progreso', 'Completada'].filter(function (s) { return s !== task.status; }).forEach(function (s) { %>
+        <form action="/tasks/<%= task._id %>/status?_method=PATCH" method="POST" class="inline">
+          <input type="hidden" name="status" value="<%= s %>">
+          <button class="btn btn-secondary" type="submit">→ <%= s %></button>
+        </form>
+      <% }) %>
+    <% } %>
+    <% if (canDelete) { %>
+      <form action="/tasks/<%= task._id %>?_method=DELETE" method="POST" class="inline" data-confirm="¿Eliminar esta tarea?">
+        <button class="btn btn-danger" type="submit">Eliminar</button>
+      </form>
+    <% } %>
+  </div>
+</article>

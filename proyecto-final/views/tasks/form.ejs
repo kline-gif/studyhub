@@ -1,0 +1,41 @@
+<section class="card narrow">
+  <h1><%= isEdit ? 'Editar tarea' : 'Nueva tarea' %></h1>
+  <% if (subjects.length === 0) { %>
+    <p class="empty">Primero necesitas una asignatura. <a href="/subjects/new">Crear asignatura</a></p>
+  <% } else { %>
+  <form method="POST" action="<%= action %>">
+    <label>Título
+      <input type="text" name="title" value="<%= task.title || '' %>" required maxlength="120" placeholder="Práctica 3: árboles AVL">
+    </label>
+    <label>Asignatura
+      <select name="subject" required>
+        <option value="">— Elige —</option>
+        <% subjects.forEach(function (s) { %>
+          <option value="<%= s._id %>" <%= String(task.subject && task.subject._id ? task.subject._id : task.subject) === String(s._id) ? 'selected' : '' %>><%= s.name %></option>
+        <% }) %>
+      </select>
+    </label>
+    <div class="row">
+      <label>Tipo
+        <select name="type"><% types.forEach(function (t) { %><option <%= (task.type || 'Práctica') === t ? 'selected' : '' %>><%= t %></option><% }) %></select>
+      </label>
+      <label>Prioridad
+        <select name="priority"><% priorities.forEach(function (p) { %><option <%= (task.priority || 'Media') === p ? 'selected' : '' %>><%= p %></option><% }) %></select>
+      </label>
+      <label>Estado
+        <select name="status"><% statuses.forEach(function (s) { %><option <%= (task.status || 'Pendiente') === s ? 'selected' : '' %>><%= s %></option><% }) %></select>
+      </label>
+    </div>
+    <label>Fecha de entrega
+      <input type="date" name="dueDate" value="<%= inputDate(task.dueDate) %>" required>
+    </label>
+    <label>Descripción / notas
+      <textarea name="description" rows="5" maxlength="2000"><%= task.description || '' %></textarea>
+    </label>
+    <div class="actions">
+      <button class="btn" type="submit"><%= isEdit ? 'Guardar cambios' : 'Crear tarea' %></button>
+      <a class="btn btn-secondary" href="/tasks">Cancelar</a>
+    </div>
+  </form>
+  <% } %>
+</section>

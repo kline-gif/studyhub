@@ -1,0 +1,22 @@
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/">🎓 StudyHub</a>
+    <nav>
+      <% if (currentUser) { %>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/tasks">Tareas</a>
+        <a href="/subjects">Asignaturas</a>
+        <span class="user">
+          <%= currentUser.name %>
+          <% if (currentUser.role === 'admin') { %><span class="badge">admin</span><% } %>
+        </span>
+        <form action="/auth/logout" method="POST" class="inline">
+          <button type="submit" class="btn btn-link">Salir</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/login">Entrar</a>
+        <a href="/auth/register">Registro</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
