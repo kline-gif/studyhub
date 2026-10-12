@@ -2,17 +2,17 @@
   <h1><%= isEdit ? 'Editar asignatura' : 'Nueva asignatura' %></h1>
   <form method="POST" action="<%= action %>">
     <label>Nombre
-      <input type="text" name="name" value="<%= subject.name || '' %>" required maxlength="80" placeholder="Estructuras de Datos">
+      <input type="text" name="name" value="<%= subject.name || '' %>" required maxlength="80" placeholder="Estructura de Datos">
     </label>
     <div class="row">
       <label>Abreviatura
-        <input type="text" name="code" value="<%= subject.code || '' %>" maxlength="20" placeholder="ED">
+        <input type="text" name="code" value="<%= subject.code || '' %>" maxlength="20" required>
       </label>
       <label>Año Academico
         <input type="number" name="credits" value="<%= subject.credits || '' %>" min="1" max="4" required>
       </label>
       <label>Semestre
-        <input type="text" name="semester" value="<%= subject.semester || '' %>" maxlength="20" placeholder="primer semestre">
+        <input type="text" name="semester" value="<%= subject.semester || '' %>" maxlength="20" required>
       </label>
     </div>
     <div class="actions">
