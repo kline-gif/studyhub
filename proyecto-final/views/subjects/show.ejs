@@ -1,7 +1,7 @@
 <div class="toolbar">
   <div>
     <h1><%= subject.name %></h1>
-    <small><%= subject.code %> · <%= subject.credits %> ECTS <% if (subject.semester) { %>· <%= subject.semester %><% } %>
+    <small><%= subject.credits %> créditos
       <% if (currentUser.role === 'admin' && subject.owner) { %>· propietario: <%= subject.owner.name %><% } %></small>
   </div>
   <div class="actions">
@@ -17,29 +17,28 @@
 </div>
 
 <section class="stats">
-  <div class="card stat"><span class="num"><%= summary.average === null ? '—' : summary.average %></span><span>Media de lo evaluado</span></div>
-  <div class="card stat"><span class="num"><%= summary.points %></span><span>Puntos aportados (de 10)</span></div>
-  <div class="card stat"><span class="num"><%= summary.remaining %>%</span><span>Peso sin nota</span></div>
-  <div class="card stat"><span class="num"><%= summary.needed === null ? '—' : summary.needed %></span><span>Nota necesaria en lo restante para aprobar (5)</span></div>
+  <div class="card stat"><span class="num"><%= summary.average === null ? '—' : summary.average %></span><span>Nota media actual</span></div>
+  <div class="card stat"><span class="num"><%= summary.gradedCount %> / <%= summary.total %></span><span>Evaluaciones con nota</span></div>
+  <div class="card stat"><span class="num"><%= summary.pending %></span><span>Evaluaciones pendientes</span></div>
+  <div class="card stat"><span class="num"><%= summary.needed === null ? '—' : summary.needed %></span><span>Nota media necesaria en las pendientes para aprobar (3)</span></div>
 </section>
 
 <p><span class="badge st-<%= slug(summary.state) %>">Estado: <%= summary.state %></span>
-  <% if (summary.state === 'Imposible aprobar') { %><small> Necesitarías más de un 10 en lo que queda.</small><% } %>
-  <% if (summary.totalWeight < 100) { %><small> · Has definido el <%= summary.totalWeight %>% de la evaluación; añade el resto para un cálculo exacto.</small><% } %>
+  <% if (summary.state === 'Imposible aprobar') { %><small> Necesitarías más de un 5 en lo que queda.</small><% } %>
+  <% if (summary.state === 'Aprobada' && summary.pending > 0) { %><small> Ya tienes el aprobado asegurado.</small><% } %>
 </p>
 
 <section class="card">
   <h2>Evaluaciones</h2>
   <% if (subject.evaluations.length === 0) { %>
-    <p class="empty">Añade parciales, prácticas, examen final… con su peso.</p>
+    <p class="empty">Añade parciales, prácticas, examen final…</p>
   <% } else { %>
     <table>
-      <thead><tr><th>Evaluación</th><th>Peso</th><th>Nota</th><th></th></tr></thead>
+      <thead><tr><th>Evaluación</th><th>Nota</th><th></th></tr></thead>
       <tbody>
         <% subject.evaluations.forEach(function (e) { %>
           <tr>
             <td><%= e.name %></td>
-            <td><%= e.weight %>%</td>
             <td><%= e.grade === null || e.grade === undefined ? 'Pendiente' : e.grade %></td>
             <td>
               <% if (canEdit) { %>
@@ -57,8 +56,7 @@
   <% if (canEdit) { %>
     <form method="POST" action="/subjects/<%= subject._id %>/evaluations" class="row eval-form">
       <label>Nombre<input type="text" name="name" required maxlength="60" placeholder="Parcial 1"></label>
-      <label>Peso (%)<input type="number" name="weight" min="1" max="100" step="0.5" required></label>
-      <label>Nota (0-10, opcional)<input type="number" name="grade" min="0" max="10" step="0.01"></label>
+      <label>Nota (2 a 5, opcional)<input type="number" name="grade" min="2" max="5" step="1"></label>
       <button class="btn" type="submit">Añadir</button>
     </form>
   <% } %>

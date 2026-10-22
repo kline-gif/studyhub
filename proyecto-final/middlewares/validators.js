@@ -34,12 +34,11 @@ const subjectRules = [
 
 const evaluationRules = [
   body('name').trim().notEmpty().withMessage('El nombre de la evaluación es obligatorio').isLength({ max: 60 }),
-  body('weight').isFloat({ min: 1, max: 100 }).withMessage('El peso debe estar entre 1 y 100').toFloat(),
   body('grade')
     .optional({ values: 'falsy' })
-    .isFloat({ min: 0, max: 10 })
-    .withMessage('La nota debe estar entre 0 y 10')
-    .toFloat(),
+    .isInt({ min: 2, max: 5 })
+    .withMessage('La nota debe ser un número de 2 a 5')
+    .toInt(),
 ];
 
 module.exports = { registerRules, loginRules, taskRules, subjectRules, evaluationRules };

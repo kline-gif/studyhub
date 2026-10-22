@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
-const PASS_GRADE = 5;
+const MIN_GRADE = 2;
+const MAX_GRADE = 5;
+const PASS_GRADE = 3;
 const round2 = (n) => Math.round(n * 100) / 100;
 const sameId = (a, b) => String(a && a._id ? a._id : a) === String(b && b._id ? b._id : b);
 
 const evaluationSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true, maxlength: 60 },
-  weight: { type: Number, required: true, min: 1, max: 100 }, // % de la nota final
-  grade: { type: Number, min: 0, max: 10, default: null }, // null = aún sin nota
+  grade: { type: Number, min: MIN_GRADE, max: MAX_GRADE, default: null }, // null = pendiente
 });
 
 const subjectSchema = new mongoose.Schema(
@@ -36,48 +37,46 @@ subjectSchema.methods.canDelete = function (user) {
   return !!user && (user.role === 'admin' || this.isOwnedBy(user));
 };
 
-// ---- Calculadora de notas ----
+// ---- Calculadora de notas (escala 2-5, aprobado desde 3, sin pesos) ----
 subjectSchema.methods.summary = function () {
   const ev = this.evaluations;
   const graded = ev.filter((e) => e.grade !== null && e.grade !== undefined);
-  const totalWeight = ev.reduce((s, e) => s + e.weight, 0);
-  const gradedWeight = graded.reduce((s, e) => s + e.weight, 0);
-  const points = graded.reduce((s, e) => s + (e.grade * e.weight) / 100, 0); // aportado a la final
-  const remaining = Math.max(100 - gradedWeight, 0); // % todavía sin nota
-  const average = gradedWeight > 0 ? points / (gradedWeight / 100) : null; // media de lo evaluado
+  const pending = ev.length - graded.length;
+  const sum = graded.reduce((s, e) => s + e.grade, 0);
+  const average = graded.length ? sum / graded.length : null;
 
   let needed = null;
   let state = 'Sin notas';
-  if (graded.length > 0 || remaining < 100) {
-    if (points >= PASS_GRADE - 1e-9) {
-      state = 'Aprobada';
-    } else if (remaining <= 0) {
-      state = 'Suspensa';
+  if (graded.length > 0) {
+    if (pending === 0) {
+      state = average >= PASS_GRADE - 1e-9 ? 'Aprobada' : 'Suspensa';
     } else {
-      needed = (PASS_GRADE - points) / (remaining / 100);
-      state = needed > 10 ? 'Imposible aprobar' : 'En curso';
+      // nota media que necesitas en las pendientes para que la media final sea 3
+      const n = (PASS_GRADE * ev.length - sum) / pending;
+      if (n <= MIN_GRADE) {
+        state = 'Aprobada'; // aunque saques el mínimo en lo que falta, apruebas
+      } else if (n > MAX_GRADE) {
+        state = 'Imposible aprobar';
+        needed = round2(n);
+      } else {
+        state = 'En curso';
+        needed = round2(n);
+      }
     }
   }
   return {
-    totalWeight: round2(totalWeight),
-    gradedWeight: round2(gradedWeight),
-    remaining: round2(remaining),
-    points: round2(points),
+    total: ev.length,
+    gradedCount: graded.length,
+    pending,
     average: average === null ? null : round2(average),
-    needed: needed === null ? null : round2(needed),
+    needed,
     state,
   };
 };
 
-subjectSchema.methods.addEvaluation = function ({ name, weight, grade }) {
-  const total = this.evaluations.reduce((s, e) => s + e.weight, 0);
-  if (total + weight > 100 + 1e-9) {
-    const err = new Error(`La suma de pesos superaría el 100% (ya tienes ${total}%)`);
-    err.status = 422;
-    throw err;
-  }
+subjectSchema.methods.addEvaluation = function ({ name, grade }) {
   const g = grade === '' || grade === undefined || grade === null ? null : grade;
-  this.evaluations.push({ name, weight, grade: g });
+  this.evaluations.push({ name, grade: g });
   return this.save();
 };
 
