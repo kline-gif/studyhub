@@ -4,9 +4,8 @@
   <div class="card stat"><span class="num"><%= stats.pending %></span><span>Tareas pendientes</span></div>
   <div class="card stat <%= stats.overdueCount ? 'stat-danger' : '' %>"><span class="num"><%= stats.overdueCount %></span><span>Atrasadas</span></div>
   <div class="card stat"><span class="num"><%= stats.completed %></span><span>Completadas</span></div>
-  <div class="card stat"><span class="num"><%= overview.gpa === null ? '—' : overview.gpa %></span><span>Nota media</span></div>
-
-<div class="two-col">
+    <div class="card stat"><span class="num"><%= overview.gpa === null ? '—' : overview.gpa %></span><span>Nota media</span></div>
+</section>
   <section class="card">
     <h2>📅 Próximos 7 días</h2>
     <% if (stats.upcoming.length === 0) { %>
