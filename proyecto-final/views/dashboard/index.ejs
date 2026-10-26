@@ -4,8 +4,7 @@
   <div class="card stat"><span class="num"><%= stats.pending %></span><span>Tareas pendientes</span></div>
   <div class="card stat <%= stats.overdueCount ? 'stat-danger' : '' %>"><span class="num"><%= stats.overdueCount %></span><span>Atrasadas</span></div>
   <div class="card stat"><span class="num"><%= stats.completed %></span><span>Completadas</span></div>
-  <div class="card stat"><span class="num"><%= overview.gpa === null ? '—' : overview.gpa %></span><span>Nota media (ponderada por créditos)</span></div>
-</section>
+  <div class="card stat"><span class="num"><%= overview.gpa === null ? '—' : overview.gpa %></span><span>Nota media</span></div>
 
 <div class="two-col">
   <section class="card">
@@ -51,12 +50,12 @@
     <p class="empty">Empieza creando tu primera asignatura (ej. "Estructuras de Datos").</p>
   <% } else { %>
     <table>
-      <thead><tr><th>Asignatura</th><th>Créditos</th><th>Media actual</th><th>Estado</th></tr></thead>
+     <thead><tr><th>Asignatura</th><th>Año</th><th>Media actual</th><th>Estado</th></tr></thead>
       <tbody>
         <% overview.rows.forEach(function (r) { %>
           <tr>
             <td><a href="/subjects/<%= r.subject._id %>"><%= r.subject.name %></a></td>
-            <td><%= r.subject.credits %></td>
+              <td><%= r.subject.year || '—' %></td>
             <td><%= r.summary.average === null ? '—' : r.summary.average %></td>
             <td><span class="badge st-<%= slug(r.summary.state) %>"><%= r.summary.state %></span></td>
           </tr>

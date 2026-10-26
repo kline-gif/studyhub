@@ -27,8 +27,8 @@ exports.create = async (req, res, next) => {
         title: 'Nueva asignatura', subject: req.body, action: '/subjects', isEdit: false, errors: result.array(),
       });
     }
-    const { name, code, credits, semester } = req.body;
-    const subject = await Subject.create({ owner: req.user._id, name, code, credits, semester });
+    const { name, code, semester } = req.body;
+    const subject = await Subject.create({ owner: req.user._id, name, code, semester });
     res.flash('success', 'Asignatura creada');
     res.redirect(`/subjects/${subject._id}`);
   } catch (err) {
@@ -84,8 +84,8 @@ exports.update = async (req, res, next) => {
         errors: result.array(),
       });
     }
-    const { name, code, credits, semester } = req.body;
-    Object.assign(subject, { name, code, credits, semester });
+    const { name, code, semester } = req.body;
+    Object.assign(subject, { name, code, semester });
     await subject.save();
     res.flash('success', 'Asignatura actualizada');
     res.redirect(`/subjects/${subject._id}`);
@@ -107,7 +107,7 @@ exports.destroy = async (req, res, next) => {
   }
 };
 
-// ---- Evaluaciones (parciales, prácticas, examen final...) ----
+// ---- Evaluaciones (parciales, prueba final, coloquio, extraordinario, mundial) ----
 exports.addEvaluation = async (req, res, next) => {
   try {
     const subject = await Subject.findById(req.params.id);

@@ -28,7 +28,6 @@ const taskRules = [
 const subjectRules = [
   body('name').trim().notEmpty().withMessage('El nombre es obligatorio').isLength({ max: 80 }),
   body('code').trim().isLength({ max: 20 }).withMessage('Código demasiado largo'),
-  body('credits').isInt({ min: 1, max: 30 }).withMessage('Los créditos deben estar entre 1 y 30').toInt(),
   body('semester').trim().isLength({ max: 20 }).withMessage('Cuatrimestre demasiado largo'),
 ];
 

@@ -1,8 +1,8 @@
+<% const typeLabel = { parcial: 'Parcial', final: 'Final', coloquio: 'Coloquio', extraordinario: 'Extraordinario', mundial: 'Mundial' }; %>
 <div class="toolbar">
   <div>
     <h1><%= subject.name %></h1>
-    <small><%= subject.credits %> créditos
-      <% if (currentUser.role === 'admin' && subject.owner) { %>· propietario: <%= subject.owner.name %><% } %></small>
+    <small><% if (currentUser.role === 'admin' && subject.owner) { %>Propietario: <%= subject.owner.name %><% } %></small>
   </div>
   <div class="actions">
     <a class="btn btn-secondary" href="/subjects">← Volver</a>
@@ -24,21 +24,26 @@
 </section>
 
 <p><span class="badge st-<%= slug(summary.state) %>">Estado: <%= summary.state %></span>
-  <% if (summary.state === 'Imposible aprobar') { %><small> Necesitarías más de un 5 en lo que queda.</small><% } %>
+  <% if (summary.state === 'Imposible aprobar') { %><small> Necesitarías más de un 5 en lo que queda: lo más probable es que vayas a coloquio.</small><% } %>
   <% if (summary.state === 'Aprobada' && summary.pending > 0) { %><small> Ya tienes el aprobado asegurado.</small><% } %>
+  <% if (summary.state === 'A coloquio') { %><small> Tu media no llega a 3. Registra el coloquio cuando lo hagas.</small><% } %>
+  <% if (summary.state === 'A extraordinario') { %><small> En el extraordinario, con 3 o más apruebas (máximo 5).</small><% } %>
+  <% if (summary.state === 'A mundial') { %><small> El mundial se evalúa sobre 3: con un 3 apruebas.</small><% } %>
+  <% if (summary.state === 'Desaprobada') { %><small> Esta asignatura cuenta como desaprobada.</small><% } %>
 </p>
 
 <section class="card">
   <h2>Evaluaciones</h2>
   <% if (subject.evaluations.length === 0) { %>
-    <p class="empty">Añade parciales, prácticas, examen final…</p>
+    <p class="empty">Añade parciales, prueba final, coloquio, extraordinario o mundial…</p>
   <% } else { %>
     <table>
-      <thead><tr><th>Evaluación</th><th>Nota</th><th></th></tr></thead>
+      <thead><tr><th>Evaluación</th><th>Tipo</th><th>Nota</th><th></th></tr></thead>
       <tbody>
         <% subject.evaluations.forEach(function (e) { %>
           <tr>
             <td><%= e.name %></td>
+            <td><%= typeLabel[e.type] || 'Parcial' %></td>
             <td><%= e.grade === null || e.grade === undefined ? 'Pendiente' : e.grade %></td>
             <td>
               <% if (canEdit) { %>
@@ -56,6 +61,15 @@
   <% if (canEdit) { %>
     <form method="POST" action="/subjects/<%= subject._id %>/evaluations" class="row eval-form">
       <label>Nombre<input type="text" name="name" required maxlength="60" placeholder="Parcial 1"></label>
+      <label>Tipo
+        <select name="type">
+          <option value="parcial">Parcial</option>
+          <option value="final">Prueba final / proyecto final</option>
+          <option value="coloquio">Coloquio</option>
+          <option value="extraordinario">Extraordinario</option>
+          <option value="mundial">Mundial (máx. 3)</option>
+        </select>
+      </label>
       <label>Nota (2 a 5, opcional)<input type="number" name="grade" min="2" max="5" step="1"></label>
       <button class="btn" type="submit">Añadir</button>
     </form>

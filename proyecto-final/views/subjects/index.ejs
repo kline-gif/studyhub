@@ -14,7 +14,7 @@
   <div class="grid">
     <% items.forEach(function (s) { const sm = s.summary(); %>
       <article class="card">
-        <span class="badge"><%= s.credits %> ECTS</span>
+         <% if (s.year) { %><span class="badge"><%= s.year %>.º año</span><% } %>
         <% if (s.semester) { %><span class="badge"><%= s.semester %></span><% } %>
         <h2><a href="/subjects/<%= s._id %>"><%= s.name %></a></h2>
         <small><%= s.code %> <% if (currentUser.role === 'admin' && s.owner) { %>· de <%= s.owner.name %><% } %></small>
