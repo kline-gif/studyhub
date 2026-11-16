@@ -8,6 +8,8 @@ async function attachUser(req, res, next) {
   if (!token) return next();
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // El usuario (y su rol) se lee SIEMPRE de la base de datos, no del token:
+    // si a alguien le quitan el rol admin, deja de tener acceso en la siguiente petición.
     const user = await User.findById(payload.id);
     if (user) {
       req.user = user;
@@ -48,4 +50,18 @@ function requireRole(...roles) {
   };
 }
 
-module.exports = { attachUser, requireAuth, guestOnly, requireRole };
+// Solo administradores: sin sesión -> al login; con sesión pero sin rol admin -> 403 (nunca 404)
+function requireAdmin(req, res, next) {
+  if (!req.user) {
+    res.flash('error', 'Debes iniciar sesión para continuar');
+    return res.redirect('/auth/login');
+  }
+  if (req.user.role !== 'admin') {
+    const err = new Error('Solo los administradores pueden acceder a esta página');
+    err.status = 403;
+    return next(err);
+  }
+  next();
+}
+
+module.exports = { attachUser, requireAuth, guestOnly, requireRole, requireAdmin };

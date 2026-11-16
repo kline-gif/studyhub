@@ -6,9 +6,10 @@
         <a href="/dashboard">Dashboard</a>
         <a href="/tasks">Tareas</a>
         <a href="/subjects">Asignaturas</a>
+        <% if (currentUser.role === 'admin') { %><a href="/admin">Admin</a><% } %>
         <span class="user">
           <%= currentUser.name %>
-          <% if (currentUser.role === 'admin') { %><span class="badge">admin</span><% } %>
+          <span class="badge"><%= currentUser.role %></span>
         </span>
         <form action="/auth/logout" method="POST" class="inline">
           <button type="submit" class="btn btn-link">Salir</button>

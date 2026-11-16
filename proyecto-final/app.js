@@ -49,6 +49,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/dashboard', require('./routes/dashboard'));
 app.use('/tasks', require('./routes/tasks'));
 app.use('/subjects', require('./routes/subjects'));
+app.use('/admin', require('./routes/admin'));
 
 // Errores
 app.use(notFound);

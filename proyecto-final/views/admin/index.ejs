@@ -1,0 +1,94 @@
+<h1>Administración</h1>
+
+<section class="stats">
+  <div class="card stat"><span class="num"><%= users.length %></span><span>Usuarios</span></div>
+  <div class="card stat"><span class="num"><%= subjects.length %></span><span>Asignaturas</span></div>
+  <div class="card stat"><span class="num"><%= tasks.length %></span><span>Tareas</span></div>
+</section>
+
+<section class="card">
+  <h2>👥 Usuarios</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Registro</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(function (u) { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td><span class="badge"><%= u.role %></span></td>
+            <td><%= fmtDate(u.createdAt) %></td>
+            <td>
+              <% if (String(u._id) === String(currentUser._id)) { %>
+                <small>(tú)</small>
+              <% } else { %>
+                <form action="/admin/users/<%= u._id %>?_method=DELETE" method="POST" class="inline"
+                      data-confirm="¿Eliminar a este usuario y TODAS sus asignaturas y tareas?">
+                  <button class="btn btn-small btn-danger" type="submit">Borrar</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>📚 Asignaturas</h2>
+  <% if (subjects.length === 0) { %>
+    <p class="empty">No hay asignaturas.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Asignatura</th><th>Año</th><th>Dueño</th><th></th></tr></thead>
+        <tbody>
+          <% subjects.forEach(function (s) { %>
+            <tr>
+              <td><a href="/subjects/<%= s._id %>"><%= s.name %></a></td>
+              <td><%= s.year || '—' %></td>
+              <td><%= s.owner ? s.owner.name : '—' %></td>
+              <td>
+                <form action="/admin/subjects/<%= s._id %>?_method=DELETE" method="POST" class="inline"
+                      data-confirm="¿Eliminar la asignatura y TODAS sus tareas?">
+                  <button class="btn btn-small btn-danger" type="submit">Borrar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<section class="card">
+  <h2>✅ Tareas</h2>
+  <% if (tasks.length === 0) { %>
+    <p class="empty">No hay tareas.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tarea</th><th>Asignatura</th><th>Dueño</th><th>Estado</th><th>Entrega</th><th></th></tr></thead>
+        <tbody>
+          <% tasks.forEach(function (t) { %>
+            <tr>
+              <td><a href="/tasks/<%= t._id %>"><%= t.title %></a></td>
+              <td><%= t.subject ? t.subject.name : '—' %></td>
+              <td><%= t.owner ? t.owner.name : '—' %></td>
+              <td><span class="badge s-<%= slug(t.status) %>"><%= t.status %></span></td>
+              <td><%= fmtDate(t.dueDate) %></td>
+              <td>
+                <form action="/admin/tasks/<%= t._id %>?_method=DELETE" method="POST" class="inline"
+                      data-confirm="¿Eliminar esta tarea?">
+                  <button class="btn btn-small btn-danger" type="submit">Borrar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>

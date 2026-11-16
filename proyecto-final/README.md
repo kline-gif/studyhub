@@ -7,7 +7,7 @@ Aplicación web full-stack con Node.js, Express y MongoDB (Atlas) para que un es
 - **Dashboard**: tareas pendientes/atrasadas, entregas de los próximos 7 días y nota media ponderada por créditos
 - **Tareas** (CRUD completo): prácticas, exámenes, proyectos y lecturas con asignatura, prioridad, estado y fecha de entrega; cambio rápido de estado; búsqueda, filtros y paginación
 - **Asignaturas** (CRUD completo) con **calculadora de notas**: añade evaluaciones con su peso (%) y nota, y la app calcula tu media, los puntos aportados y **qué nota necesitas en lo que queda para aprobar** (detecta "imposible aprobar")
-- Roles: `user` gestiona lo suyo · `admin` ve todo y puede borrar cualquier tarea/asignatura
+- Roles: user (CRUD de sus propios items) y admin (puede ver/borrar todo)
 - Vistas dinámicas con EJS (layout + partials), mensajes flash, manejo global de errores
 - Desplegada en Render.com
 
@@ -51,6 +51,7 @@ Crear un admin: `npm run create-admin -- admin@correo.com MiPassword123 "Admin"`
 | `/tasks` (+ `/new`, `/:id`, `/:id/edit`, `PATCH /:id/status`) | CRUD de tareas | dueño; admin ve y borra |
 | `/subjects` (+ `/new`, `/:id`, `/:id/edit`) | CRUD de asignaturas | dueño; admin ve y borra |
 | `POST /subjects/:id/evaluations`, `DELETE /subjects/:id/evaluations/:evalId` | Evaluaciones y notas | dueño |
+| `GET /admin` (+ `DELETE /admin/users/:id`, `/admin/subjects/:id`, `/admin/tasks/:id`) | Panel de administración: todos los usuarios, asignaturas y tareas | solo admin (sin sesión → login; usuario normal → 403) |
 
 ## Capturas
 *(añade una captura o enlace a un video corto)*
