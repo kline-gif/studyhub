@@ -9,7 +9,7 @@ Aplicación web full-stack con Node.js, Express y MongoDB (Atlas) para que un es
 - **Asignaturas** (CRUD completo) con **calculadora de notas**: añade evaluaciones con su peso (%) y nota, y la app calcula tu media, los puntos aportados y **qué nota necesitas en lo que queda para aprobar** (detecta "imposible aprobar")
 - Roles: user (CRUD de sus propios items) y admin (puede ver/borrar todo)
 - Vistas dinámicas con EJS (layout + partials), mensajes flash, manejo global de errores
-- Desplegada en Render.com
+- Desplegada en Vercel.com
 
 ## Tecnologías
 Node.js 20+ · Express 4 · Mongoose · JWT + bcrypt(js) · EJS + express-ejs-layouts · Helmet · express-validator · express-rate-limit · method-override
@@ -26,7 +26,7 @@ public/       css y js
 ```
 
 ## Enlace en producción
-https://tu-app.onrender.com  ← *(reemplazar tras el despliegue)*
+https://studyhub-three-iota.vercel.app
 
 ## Instalación local
 1. `npm install`
@@ -34,14 +34,6 @@ https://tu-app.onrender.com  ← *(reemplazar tras el despliegue)*
 3. `npm start` (o `npm run dev`) → http://localhost:3000
 
 Crear un admin: `npm run create-admin -- admin@correo.com MiPassword123 "Admin"`
-
-## Despliegue en Render
-1. Sube el repo a GitHub.
-2. MongoDB Atlas: cluster gratuito, usuario de BD y *Network Access* `0.0.0.0/0`; copia la cadena de conexión.
-3. Render → **New → Web Service** → conecta el repo. Build: `npm install` · Start: `npm start`.
-4. Variables de entorno: `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`.
-5. HTTPS es automático. Copia la URL pública aquí arriba.
-(También se incluye `render.yaml`.)
 
 ## Rutas
 | Ruta | Descripción | Acceso |
@@ -54,4 +46,43 @@ Crear un admin: `npm run create-admin -- admin@correo.com MiPassword123 "Admin"`
 | `GET /admin` (+ `DELETE /admin/users/:id`, `/admin/subjects/:id`, `/admin/tasks/:id`) | Panel de administración: todos los usuarios, asignaturas y tareas | solo admin (sin sesión → login; usuario normal → 403) |
 
 ## Capturas
-*(añade una captura o enlace a un video corto)*
+
+
+### Inicio de sesión:
+
+<img width="1300" height="871" alt="Captura de pantalla 2026-11-16 133008" src="https://github.com/user-attachments/assets/f158095b-18ed-46ed-992d-54ca70e321db" />
+
+
+
+### Registro:
+
+<img width="1320" height="875" alt="Captura de pantalla 2026-11-16 133039" src="https://github.com/user-attachments/assets/72ffbe67-bbc9-429e-9113-9bdfdf7a6c81" />
+
+
+
+### Inicio:
+
+<img width="1406" height="865" alt="Captura de pantalla 2026-11-16 132720" src="https://github.com/user-attachments/assets/faf05f15-51fd-4c97-a073-08bc66aded5b" />
+
+
+
+### Sección "Mis Tareas":
+
+<img width="1376" height="872" alt="Captura de pantalla 2026-11-16 132851" src="https://github.com/user-attachments/assets/48e6cb29-7f34-4a2f-b0fe-9228cdc3e258" />
+
+
+
+### Sección "Mis Asignaturas":
+
+<img width="1410" height="872" alt="Captura de pantalla 2026-11-16 132923" src="https://github.com/user-attachments/assets/d5a9fd52-27d0-45a5-a1f5-48f59ca37eca" />
+
+
+
+### Panel de Admin:
+
+<img width="1506" height="872" alt="Captura de pantalla 2026-11-16 132252" src="https://github.com/user-attachments/assets/556016bc-6c54-48b9-8b47-a91c4cab930c" />
+
+
+
+
+
